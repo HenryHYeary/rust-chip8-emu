@@ -65,5 +65,21 @@ impl Cpu {
         let start = PROGRAM_START as usize;
         self.ram[start..start + data.len()].copy_from_slice(data);
     }
+
+    pub fn tick(&mut self) {
+        let opcode = self.fetch();
+        self.execute(opcode);
+    } 
+
+    pub fn fetch(&mut self) -> u16 {
+        let hi = self.ram[self.pc as usize] as u16;
+        let lo = self.ram[self.pc as usize + 1] as u16;
+        self.pc += 2;
+        (hi << 8) | lo
+    }
+
+    fn execute(&mut self, op: u16) {
+        let nibble = ((op & 0xF000) >> 12) as u8;
+    }
 }
 
