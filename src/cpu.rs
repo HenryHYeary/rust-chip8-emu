@@ -89,6 +89,19 @@ impl Cpu {
 
         match nibble {
             0x0 => match op {
+                0x00E0 => self.op_cls(),
+                0x00EE => self.op_ret(),
+                _ => {},
+            },
+            0x1 => self.op_jp(nnn),
+            0x2 => self.op_call(nnn),
+            0x3 => self.op_se_vx_byte(x, nn),
+            0x4 => self.op_sne_vx_byte(x, nn),
+            0x5 => self.op_se_vx_vy(x, y),
+            0x6 => self.op_ld_vx_byte(x, nn),
+            0x7 => self.op_add_vx_byte(x, nn),
+
+            0x8 => match n {
                 
             }
         }
