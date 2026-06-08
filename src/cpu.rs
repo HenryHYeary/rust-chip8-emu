@@ -80,6 +80,18 @@ impl Cpu {
 
     fn execute(&mut self, op: u16) {
         let nibble = ((op & 0xF000) >> 12) as u8;
+        let x = ((op & 0xF000 >> 8)) as usize;
+        let y = ((op & 0xF000 >> 4)) as usize;
+
+        let n = (op & 0x000F) as u8;
+        let nn = (op & 0x00FF) as u8;
+        let nnn = op & 0x0FFF;
+
+        match nibble {
+            0x0 => match op {
+                
+            }
+        }
     }
 }
 
