@@ -28,4 +28,42 @@ fn main() {
     let timer_interval = std::time::Duration::from_nanos(1_000_000_000 / TIMER_HZ);
     let mut last_timer_tick = std::time::Instant::now();
 
+
+    loop {
+        let frame_start = std::time::Instant::now();
+        cpu.tick();
+
+        if last_timer_tick.elapsed() >= timer_interval {
+            cpu.tick_timers();
+            last_timer_tick = std::time::Instant::now();
+
+            if cpu.sound_timer > 0 {
+                print!("\x07");
+            }
+        }
+
+        if cpu.draw_flag {
+            render_to_terminal(&cpu);
+            cpu.draw_flag = false;
+        }
+
+        let elapsed = frame_start.elapsed();
+        if elapsed < cpu_interval {
+            std::thread::sleep(cpu_interval - elapsed);
+        }
+    }
+}
+
+fn render_to_terminal(cpu: &Cpu) {
+    use cpu::{DISPLAY_HEIGHT, DISPLAY_WIDTH};
+
+    print!("\x1B[H");
+
+    for y in 0..DISPLAY_HEIGHT {
+        for x in 0..DISPLAY_WIDTH {
+            let pixel = cpu.display[y * DISPLAY_WIDTH + x];
+            print!("{}", if pixel { "█" } else { " " });
+        }
+        println!();
+    }
 }
