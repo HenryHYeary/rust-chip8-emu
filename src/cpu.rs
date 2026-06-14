@@ -102,8 +102,25 @@ impl Cpu {
             0x7 => self.op_add_vx_byte(x, nn),
 
             0x8 => match n {
-                
-            }
+                0x0 => self.op_ld_vx_vy(x, y),
+                0x1 => self.op_or(x, y),
+                0x2 => self.op_and(x, y),
+                0x3 => self.op_xor(x, y),
+                0x4 => self.op_add_vx_vy(x, y),
+                0x5 => self.op_sub(x, y),
+                0x6 => self.op_shr(x),
+                0x7 => self.op_subn(x, y),
+                0xE => self.op_shl(x, y),
+                _ => eprintln!("Unknown opcode: {:#06X}", op),                
+            },
+
+            0x9 => self.op_sne_vx_vy(x, y),
+            0xA => self.op_ld_i(nnn),
+            0xB => self.op_jp_v0(nnn),
+            0xC => self.op_rnd(x, nn),
+            0xD => self.op_drw(x, y, n),
+
+            
         }
     }
 }
