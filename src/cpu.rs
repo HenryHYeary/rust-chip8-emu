@@ -82,8 +82,8 @@ impl Cpu {
 
     fn execute(&mut self, op: u16) {
         let nibble = ((op & 0xF000) >> 12) as u8;
-        let x = ((op & 0xF000 >> 8)) as usize;
-        let y = ((op & 0xF000 >> 4)) as usize;
+        let x = ((op & 0x0F00) >> 8) as usize;
+        let y = ((op & 0x00F0) >> 4) as usize;
 
         let n = (op & 0x000F) as u8;
         let nn = (op & 0x00FF) as u8;
@@ -184,7 +184,11 @@ impl Cpu {
     }
 
     fn op_ld_vx_byte(&mut self, x: usize, nn: u8) {
-        self.v[x] = nn;
+        if x < 16 {
+            self.v[x] = nn;
+        } else {
+            eprintln!("Invalid register index: {}", x);
+        }
     }
 
     fn op_add_vx_byte(&mut self, x: usize, nn: u8) {
