@@ -1,5 +1,11 @@
 mod cpu;
 
+use pixels::{Pixels, SurfaceTexture};
+use winit::dpi::LogicalSize;
+use winit::event::{Event, WindowEvent};
+use winit::event_loop::EventLoop;
+use winit::window::WindowBuilder;
+use winit_input_helper::WinitInputHelper;
 use cpu::Cpu;
 use std::{env, fs};
 
