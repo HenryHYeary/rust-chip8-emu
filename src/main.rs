@@ -1,10 +1,13 @@
 mod cpu;
 
+use std::sync::Arc;
+
 use pixels::{Pixels, SurfaceTexture};
+use winit::application::ApplicationHandler;
 use winit::dpi::LogicalSize;
-use winit::event::{Event, WindowEvent};
-use winit::event_loop::EventLoop;
-use winit::window::WindowAttributes;
+use winit::event::{self, Event, WindowEvent};
+use winit::event_loop::{EventLoop, ActiveEventLoop};
+use winit::window::{WindowAttributes, WindowId};
 use winit_input_helper::WinitInputHelper;
 use cpu::Cpu;
 
@@ -12,11 +15,51 @@ const WIDTH: u32 = 64;
 const HEIGHT: u32 = 32;
 const SCALE: u32 = 10;
 
-fn main() {
-    let event_loop = EventLoop::new().unwrap();
-    let mut input = WinitInputHelper::new();
+struct App<'a> {
+    cpu: Cpu,
+    window: Option<Arc<winit::window::Window>>,
+    pixels: Option<Pixels<'a>>,
+}
 
-    
+impl ApplicationHandler for App<'a> {
+    fn resumed(&mut self, event_loop: &ActiveEventLoop) {
+        let window = event_loop.create_window(
+            WindowAttributes::default()
+                .with_title("CHIP-8")
+                .with_inner_size(LogicalSize::new((WIDTH * SCALE) as f64, (HEIGHT * SCALE) as f64))
+        ).unwrap();
+
+        let pixels = {
+            let window_size = window.inner_size();
+            let surface_texture = SurfaceTexture::new(
+                window_size.width,
+                window_size.height,
+                Arc::clone(&window),
+            );
+
+            Pixels::new(WIDTH, HEIGHT, surface_texture).unwrap()
+        };
+
+        self.window = Some(window);
+        self.pixels = Some(pixels);
+    }
+
+    fn window_event(
+        &mut self,
+        event_loop: &ActiveEventLoop,
+        window_id: WindowId,
+        event: WindowEvent,
+    )
+    {
+        match event {
+              WindowEvent::CloseRequested => event_loop.exit(),
+                WindowEvent::RedrawRequested => {
+                    draw(&cpu, pixels.frame_mut());
+                    pixels.render().unwrap();
+                },  
+                _ => {},
+        }
+    }
 }
 
 // const CPU_HZ: u64 = 500;
